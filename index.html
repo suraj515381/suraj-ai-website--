@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suraj AI Assistant</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_India.svg/2560px-Flag_of_India.svg.png');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+    }
+    .avatar {
+      height: 300px;
+      margin: 20px auto;
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    button {
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #1e90ff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3ca9ff;
+    }
+    #insta {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+    }
+    #settings {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    #memoryToggle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 16px;
+      background: #ff9800;
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="settings">⚙️</div>
+  <div id="memoryToggle" onclick="toggleMemory()">🧠 यादें</div>
+  <div class="container">
+    <h1>☀️ SUR🧠J</h1>
+    <img src="https://cdn.pixabay.com/photo/2016/11/29/10/08/avatar-1869057_1280.png" class="avatar" alt="3D Avatar">
+    <div class="buttons">
+      <button onclick="startListening()">🎤 बोलो</button>
+      <button onclick="searchQuery()">🔍 सर्च</button>
+    </div>
+  </div>
+  <div id="insta">
+    <a href="https://instagram.com/mr_suraj_roy__" target="_blank" style="color:white; text-decoration:none;">@mr_suraj_roy__</a>
+  </div>
+
+  <script>
+    const synth = window.speechSynthesis;
+    let memoryEnabled = false;
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = navigator.language.startsWith("hi") ? 'hi-IN' : 'en-US';
+      synth.speak(utter);
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = navigator.language;
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const result = event.results[0][0].transcript;
+        speak("आपने कहा: " + result);
+        respondWithAI(result);
+        if (memoryEnabled) localStorage.setItem(Date.now(), result);
+      };
+
+      recognition.onerror = function() {
+        speak("माफ कीजिए, मैं सुन नहीं पाया");
+      };
+    }
+
+    function respondWithAI(prompt) {
+      let genericReply = "यह एक अच्छा सवाल है! मैं इस पर जरूर सोचूँगा।";
+      if (prompt.toLowerCase().includes("नाम")) {
+        genericReply = "मेरा नाम सूरज है, और मैं आपकी मदद के लिए हमेशा तैयार हूँ!";
+      } else if (prompt.toLowerCase().includes("मौसम")) {
+        genericReply = "कृपया एक पल रुकिए, मैं आपके स्थान का मौसम देखने की कोशिश करता हूँ।";
+      } else if (prompt.toLowerCase().includes("भारत")) {
+        genericReply = "भारत एक महान देश है जिसमें विविधता में एकता की भावना है।";
+      } else if (prompt.toLowerCase().includes("कौन हो")) {
+        genericReply = "मैं सूरज हूँ — आपका AI सहायक जो आपकी मदद के लिए हमेशा तैयार है!";
+      }
+      speak(genericReply);
+    }
+
+    function searchQuery() {
+      const query = prompt("क्या सर्च करना है?");
+      if (query) window.open("https://www.google.com/search?q=" + encodeURIComponent(query), "_blank");
+    }
+
+    function toggleMemory() {
+      const permission = confirm("क्या मैं आपकी बातें याद रखूँ?");
+      memoryEnabled = permission;
+      speak(permission ? "ठीक है, मैं अब याद रखूँगा।" : "ठीक है, मैं कुछ याद नहीं रखूँगा।");
+    }
+  </script>
+</body>
+</html>
